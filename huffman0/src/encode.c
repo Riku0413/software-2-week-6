@@ -50,11 +50,9 @@ static void reset_count(void)
 
 // 新たなnodeの生成
 static Node *create_node(int symbol, int count, Node *left, Node *right, Node *upper)
-// 🔥upperの追加！
 {
     Node *ret = (Node *)malloc(sizeof(Node));
     *ret = (Node){ .symbol = symbol, .count = count, .left = left, .right = right, .upper = upper};
-    // (*ret).bit = (char *)malloc(sizeof(char)*100);
     return ret;
 }
 
@@ -92,7 +90,7 @@ static Node *build_tree(void)
 	// カウントの存在しなかったシンボルには何もしない
 	if (symbol_count[i] == 0) continue;
 	
-	nodep[n++] = create_node(i, symbol_count[i], NULL, NULL, NULL); // 🔥upperを追加
+	nodep[n++] = create_node(i, symbol_count[i], NULL, NULL, NULL);
 	
     }
 
@@ -103,9 +101,9 @@ static Node *build_tree(void)
 	
 	// Create a new node
 	// 選ばれた2つのノードを元に統合ノードを新規作成
-    nodep[n++] = create_node(dummy, node1->count + node2->count, node1, node2, NULL); // 🔥ここは一旦NULL！
-    (*node1).upper = nodep[n-1]; // 🔥上につなげる
-    (*node2).upper = nodep[n-1]; // 🔥上につなげる
+    nodep[n++] = create_node(dummy, node1->count + node2->count, node1, node2, NULL);
+    (*node1).upper = nodep[n-1]; // 親ノードにつなげる
+    (*node2).upper = nodep[n-1]; // 親ノードにつなげる
 	
     }
 
@@ -120,30 +118,104 @@ static Node *build_tree(void)
 // depth = 0 からスタートする！　depth は index として使う！
 void traverse_tree(const int depth, Node *np, char *bit_now, int flag)
 {
-
     if (flag == 0 && np->left != NULL) {
         bit_now[depth] = '0';
         traverse_tree(depth + 1, np->left, bit_now, flag);
     } else if (flag == 0 && (np->upper)->right != np) {
-        for (int i = 0; i < 100; i++) {
+
+        int cursor_count = 0;
+
+        for (int i = 0; i < 20; i++) {
             np->bit[i] = bit_now[i];
+            if (bit_now[i] != '\0') {
+                cursor_count++;
+            }
         }
+        for (int i = 0; i < cursor_count; i++) {
+            printf(" ");
+        }
+
+
         if (np->symbol == '\n') {
-            printf("\\n : %s\n", np->bit);    
+            printf("%s : \\n", np->bit);
+            cursor_count += 5;
         } else {
-            printf("%c : %s\n", np->symbol, np->bit);
+            printf("%s : %c", np->bit, np->symbol);
+            cursor_count += 4;
         }
+
+        for (int i = 0; i < cursor_count - 1; i++) {
+            printf("\b");
+        }
+        int mode = 0;
+        for (int i = 19; i >= 0; i--) {
+            if (np->bit[i] == '\0') {
+                continue;
+            } else if (mode == 0) {
+                if (np->bit[i] == '0') {
+                    printf("\b\b┬");
+                } else {
+                    printf("\b\b└");
+                    mode = 1;
+                }
+            } else {
+                if (np->bit[i] == '0') {
+                    printf("\b\b│"); 
+                } else {
+                    printf("\b\b "); 
+                }
+            }
+        }
+        printf("\n");
+
         bit_now[depth - 1] = '1';
         traverse_tree(depth, (np->upper)->right, bit_now, flag);
     } else if (flag == 0) {
-        for (int i = 0; i < 100; i++) {
+
+        int cursor_count = 0;
+
+        for (int i = 0; i < 20; i++) {
             np->bit[i] = bit_now[i];
+            if (bit_now[i] != '\0') {
+                cursor_count++;
+            }
         }
+        for (int i = 0; i < cursor_count; i++) {
+            printf(" ");
+        }
+
         if (np->symbol == '\n') {
-            printf("\\n : %s\n", np->bit);    
+            printf("%s : \\n", np->bit);
+            cursor_count += 5;
         } else {
-            printf("%c : %s\n", np->symbol, np->bit);
+            printf("%s : %c", np->bit, np->symbol);
+            cursor_count += 4;
         }
+
+        for (int i = 0; i < cursor_count - 1; i++) {
+            printf("\b");
+        }
+        int mode = 0;
+        for (int i = 19; i >= 0; i--) {
+            if (np->bit[i] == '\0') {
+                continue;
+            } else if (mode == 0) {
+                if (np->bit[i] == '0') {
+                    printf("\b\b┬");
+                } else {
+                    printf("\b\b└");
+                    mode = 1;
+                }
+            } else {
+                if (np->bit[i] == '0') {
+                    printf("\b\b│"); 
+                } else {
+                    printf("\b\b ");
+                }
+            }
+        }
+        printf("\n");
+
         bit_now[depth - 1] = '\0';
         flag = 1;
         traverse_tree(depth - 1, np->upper, bit_now, flag);
