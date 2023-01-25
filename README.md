@@ -80,7 +80,7 @@ void traverse_tree(const int depth, Node *root, char *bit_now, int flag);
 (*node2).upper = nodep[n-1]; // 親ノードにつなげる
 ```
 
-最後にtraverse_tree()関数内では以下の３つの機能を実装した.
+最後にtraverse_tree()関数内では以下の4つの機能を実装した.
 
 1. flagと現在のノードの従属関係に応じて次のノードに移動
 2. ハフマン符号の作成
